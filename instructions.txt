@@ -1,0 +1,52 @@
+Repo: boolean-uk-galaxy-immigration-desk
+
+Description
+In this exercise we explore a single-page application with various sections that interact with each other.
+
+Deliverables
+- A user can see a list of applicants waiting to be accepted into the space station
+- A user can see an immigration form with the following:
+    - A section for the applicant's name
+    - An input for the applicant's destination
+    - A select input for the applicant's purpose of travel
+    - A radio input for the applicant's response to terrorist activity
+    - An button to accept applicants
+        - The button is disabled if an applicant has not been selected
+- From the list of applicants, a user can:
+    - See an applicants name
+    - Click a button to:
+        - View an applicant's details in the info section which includes:
+            - Gender
+            - DOB - date of birth
+            - Height
+            - Mass
+            - Homeworld (must have)
+        - And, select the applicant for the immigration form
+            - If the applicant has already been accepted, the form is replaced with a notification of acceptance
+- From the immigration form, a user can:
+    - Fill out the details for the applicant
+    - And, accept the applicant and store the details in the state
+@here
+
+Instructions
+- Grab the starting template here: https://codesandbox.io/s/js-exercise-galaxy-immigration-desk-starter-template-yf277
+- Read the "Star Wars API" documentation: https://swapi.dev/documentation
+- Think about which resources you are going to use
+- Create a state object
+- Create fetch functions to get data
+- Create render functions that read from state
+
+Tips
+- Start with the logic first, use console.log(state) to check your logic is working; when the logic is working as expected move onto styling
+- Notice the url to other SWAPI resources in the data; think about what you need and make multiple fetch requests before adding data to state
+
+Challenge (extra day of work)
+Create the "Starship Hangar" page, not another HTML page, where:
+    - A user can view a list of starships that belong to the accepted immigration applicants
+    - From the list of starships, a user can:
+        - View info on the starship in the info section
+        - And, view the crew of the starship in the action section
+    - From the action section, a user can:
+        - Launch a ship from the space station
+        - And, remove the starship from the list of starships
+        - And, remove the crew from the applicant section on the "Crew Deck" page
