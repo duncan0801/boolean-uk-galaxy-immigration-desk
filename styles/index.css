@@ -1,0 +1,19 @@
+.applicant {
+    border: 1px black solid;
+    border-radius: 5px;
+    margin: 10px 0;
+    padding: 5px;
+
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+}
+.applicant .name {
+    font-weight: bold;
+}
+.viewButton {
+    margin: 5px;
+    background-color: #9b9b9b;
+    padding: 5px;
+    border-radius: 5px;
+}

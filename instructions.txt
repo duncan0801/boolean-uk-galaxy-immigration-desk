@@ -10,7 +10,7 @@ Deliverables
     - An input for the applicant's destination
     - A select input for the applicant's purpose of travel
     - A radio input for the applicant's response to terrorist activity
-    - An button to accept applicants
+    - A button to accept applicants
         - The button is disabled if an applicant has not been selected
 - From the list of applicants, a user can:
     - See an applicants name
