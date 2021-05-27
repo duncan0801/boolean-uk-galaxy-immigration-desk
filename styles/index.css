@@ -8,6 +8,10 @@
     grid-template-columns: 1fr auto;
     align-items: center;
 }
+
+.applicant.accepted {
+    background-color: rgba(33, 218, 33, 0.815);
+}
 .applicant .name {
     font-weight: bold;
 }
@@ -16,4 +20,18 @@
     background-color: #9b9b9b;
     padding: 5px;
     border-radius: 5px;
+}
+
+/* View Section */
+.viewApplicantSection {
+    padding: 20px;
+}
+.viewApplicantSection h2 {
+    text-align: center;
+    width: 400px;
+}
+
+.applicantInfo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 }
