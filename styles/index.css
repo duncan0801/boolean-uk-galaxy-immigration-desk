@@ -35,3 +35,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
 }
+
+.accepted {
+    background-color: rgba(0, 199, 0, 0.609);
+}

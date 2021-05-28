@@ -1,20 +1,32 @@
+/*
+1.✔ Get the people from the API then put them into state.applicants
+2.✔ Create a render applicants list function
+3.✔ Get the world names into state an array using conditional fetches on event listener in the view 
+    (e.g if applicant.homeworld is in the planets array already, then get the name from state
+    If the applicant.homewrold is NOT in state already, fetch the homewrold from the server and pull the name (functionise- fetchWorldName())
+    )
+4.✔ Create a render view applicant function
+5.Create a render form function
+6. Add event Listeners:
+*/
+
 const infoSection = document.querySelector(".info-section");
 const listSection = document.querySelector(".list-section");
 const actionSection = document.querySelector(".action-section");
 
+function setState(objectWithKeystoUpdate) {
+    state = {...state, ...objectWithKeystoUpdate}
+}
+function createEl(tag) {
+    return document.createElement(tag)
+}
+
 let state = {
     "applicants": [],
     "acceptedApplicants": [],
+    "rejectedApplicants": [],
     "planets": [],
-    "viewApplicant": { 
-        name: "luke",
-        gender: "male",
-        DOB: "23/12/unkown",
-        height: 6,
-        mass: 123,
-        homeworld: "bla"
-
-    }
+    "viewApplicant": {}
 }
 
 function getApplicants() {
@@ -32,13 +44,36 @@ function getApplicants() {
     })
 }
 getApplicants()
+function checkHomeworldData(applicant) {
+    //if applicant.homewrold is not in state.planets then fetch, store the planet data in state
+    
+    return fetch(applicant.homeworld)
+                .then(function(response) {
+                    return response.json()
+                })
+                .then(function(data) {
+                    // state = [...state, ]
+                    state = {...state, ...state.planets.push(data)}
+                    return data
+                })
+}
 
 function renderApplicants() {
     const listEl = document.querySelector(".applicantList")
 
+    listEl.innerHTML = ""
+
     for (const applicant of state.applicants) {
         const applicantEL = document.createElement("li")
         applicantEL.setAttribute("class", "applicant")
+
+        let isApplicantAccepted = state.acceptedApplicants.some(function (acceptedApplicant) {
+            return acceptedApplicant === applicant.name
+        })
+        console.log(isApplicantAccepted)
+        if(isApplicantAccepted) {
+            applicantEL.classList.add("accepted")
+        }
 
         const nameEl =  document.createElement("span")
         nameEl.setAttribute("class", "name")
@@ -54,24 +89,26 @@ function renderApplicants() {
             //2. function to get all of the data into the viewApplicant state?
             //3.Call render function that will render from state e.g renderApplicantInfo()
             state = {...state, viewApplicant: applicant} 
+            
+            renderApplicantData(applicant)
 
-            let checkForPlanet = state.planets.some(function(planet) {
-                return planet.url === applicant.homeworld
-            })
-            console.log("Is planet in state?:", checkForPlanet)
-        
-            if(!checkForPlanet) {
-                checkHomeworldData(applicant)
-                .then(function() {
-                    renderViewApplicant(applicant)
-                })
-                
+            if (checkImmigarationStatus(applicant) === "isAccepted") {
+                // TODO: renderAcceptedView()
+
+                actionSection.innerText=""
+
+                const acceptedEl = createEl("h2")
+                acceptedEl.setAttribute("class", "accepted")
+                acceptedEl.innerText = "Accepted"
+
+                actionSection.append(acceptedEl)
             }
-            else{
-                renderViewApplicant(applicant)
+            // if (checkImmigarationStatus() === "isRejected") {
+            //     renderRejectedView()          
+            // }
+            if(checkImmigarationStatus(applicant) === null) {
+                renderImmigrationForm(applicant)
             }
-            
-            
             
         })
 
@@ -133,8 +170,6 @@ function renderViewApplicant(applicant) {
     homeworldSubHeading.innerText = "Homeworld"
     const homeworldPEl = document.createElement("p")
 
-    console.log(applicant)
-    // This will be undefined if it doesn't find anything 
     let homeworldData = state.planets.find(function(planet) {
         
         return planet.url === applicant.homeworld
@@ -150,42 +185,180 @@ function renderViewApplicant(applicant) {
     homeworldliEl.append(homeworldSubHeading, homeworldPEl)
     viewApplicantList.append(genderliEl, DOBliEl, heightliEl, massliEl, homeworldliEl)
     infoSection.append(viewApplicantSectionHeadingEl, lineBreakEl, viewApplicantList)
-    //Write the render function for view applicant
 }
+function renderImmigrationForm(applicant) {
+    /*
+    1. Applicant name
+    2. Destination input 
+    3. Purpose of travel select
+    4. terrorist activit y or n? radio
+    5. Accept Button
 
-function getWorldData(worldURL) {
-    return fetch(worldURL)
-            .then(function(response) {
-                return response.json()
-            })
-            .then(function(data) {
-                console.log(data)
-                return data
-            })
+     */
+    actionSection.innerHTML = ""
 
-}
-function checkHomeworldData(applicant) {
-    //if applicant.homewrold is not in state.planets then fetch, store the planet data in state
+    const headingEL = createEl("h2")
+    headingEL.innerText = "Immigration Form"
+
+    const subheadingEl = createEl("h3")
+    subheadingEl.setAttribute("class", "subheading")
+    subheadingEl.innerText = "Applicant Name: " + applicant.name
+
+    const formEl = createEl("form")
+    formEl.setAttribute("class", "immigrationForm")
+
+    const destinationLabelEl = createEl("label")
+    destinationLabelEl.setAttribute("for", "destination")
+    destinationLabelEl.innerText = "Destination:"
+    const destinationInputEl = createEl("input")
+    destinationInputEl.setAttribute("type", "text")
+    destinationInputEl.setAttribute("name", "destination")
+
+    const purposeOfTravelLabelEl = createEl("label")
+    purposeOfTravelLabelEl.setAttribute("for", "purposeOfTravel")
+    purposeOfTravelLabelEl.innerText = "Purpose Of Travel:"
+    const purposeOfTravelSelectEl = createEl("select")
+    purposeOfTravelSelectEl.setAttribute("id", "purposeOfTravel")
+    purposeOfTravelSelectEl.setAttribute("name", "purposeOfTravel")
+
+    let purposes = ["Sith Lord Matters", "Jedi Training", "These Aren't The Droids  You Are Looking For"]
+
+    for(const purpose of purposes) {
+        const optionEl = createEl("option")
+        optionEl.innerText = purpose
+
+        purposeOfTravelSelectEl.append(optionEl)
+    }
+
+    const terroristActivityLabelEl = createEl("label")
+    terroristActivityLabelEl.setAttribute("for", "terroristActivity")
+    terroristActivityLabelEl.innerText = "Terrorist Activity?"
+
+    const terroristActivityFieldsetlEl = createEl("fieldset")
+    terroristActivityFieldsetlEl.setAttribute("id", "terroristActivity")
+
+    const yesLabelEl = createEl("label")
+    yesLabelEl.setAttribute("for", "yes")
+    yesLabelEl.innerText = "yes"
+    const yesInputEl = createEl("input")
+    yesInputEl.setAttribute("type", "radio")
+    yesInputEl.setAttribute("name", "terroristActivity")
+    yesInputEl.setAttribute("value", "yes")
+    yesInputEl.setAttribute("id", "yes")
     
-    return fetch(applicant.homeworld)
-                .then(function(response) {
-                    return response.json()
-                })
-                .then(function(data) {
-                    // state = [...state, ]
-                    state = {...state, ...state.planets.push(data)}
-                    return data
-                })
+    const noLabelEl = createEl("label")
+    noLabelEl.setAttribute("for", "no")
+    noLabelEl.innerText = "no"
+    const noInputEl = createEl("input")
+    noInputEl.setAttribute("type", "radio")
+    noInputEl.setAttribute("name", "terroristActivity")
+    noInputEl.setAttribute("value", "no")
+    noInputEl.setAttribute("id", "no")
+
+    const acceptButtonEl = createEl("button")
+    acceptButtonEl.setAttribute("class", "accept")
+    acceptButtonEl.setAttribute("type", "submit")
+    acceptButtonEl.innerText = "Accept"
+
+    // const rejectButtonEl = createEl("button")
+    // rejectButtonEl.setAttribute("class", "reject")
+    // rejectButtonEl.setAttribute("type", "button")
+    // rejectButtonEl.innerText = "Reject"
+
+    acceptButtonEl.addEventListener("click", accepted)
+    // TODO acceptButtonEl.addEventListener("submit", function(e) {
+    //     e.preventDefault()
+
+    //     accepted()
+
+
+    // })
+
+    function accepted() {
+        infoSection.innerHTML = ""
+        // let newAcceptedApplicants = [...state.acceptedApplicants.push(applicant.name)]
+
+        //TODO
+        // let acceptedApplicant = {
+        //     name: applicant.name,
+        //     distination: destinationInputEl.value,
+        //     purposeOfTravel: purposeOfTravelSelectEl.value,
+        //     terroristActivity: terroristActivityFieldsetlEl.value
+        // }
+        setState({"acceptedApplicants": [...state.acceptedApplicants, applicant.name]})
+        acceptButtonEl.setAttribute("disabled", "")
+        acceptButtonEl.setAttribute("class", "accepted")
+
+        renderApplicants()
+        
+    }
+    
+    terroristActivityFieldsetlEl.append(
+        yesLabelEl,
+        yesInputEl,
+        noLabelEl,
+        noInputEl
+        )
+    formEl.append(
+        destinationLabelEl, 
+        destinationInputEl,
+        purposeOfTravelLabelEl,
+        purposeOfTravelSelectEl,
+        terroristActivityLabelEl,
+        acceptButtonEl
+        )
+    actionSection.append(headingEL, subheadingEl, formEl)
 }
 
-/*
-1.✔ Get the people from the API then put them into state.applicants
-2.✔ Create a render applicants list function
-3. Get the world names into state an array using conditional fetches on event listener in the view 
-    (e.g if applicant.homeworld is in the planets array already, then get the name from state
-    If the applicant.homewrold is NOT in state already, fetch the homewrold from the server and pull the name (functionise- fetchWorldName())
-    )
-3.Create a render view applicant function
-4.Create a render form function
-5. Add event Listeners:
-*/
+function renderApplicantData(applicant) {
+    let checkForPlanet = state.planets.some(function(planet) {
+        return planet.url === applicant.homeworld
+    })
+    console.log("Is planet in state?:", checkForPlanet)
+
+    if(!checkForPlanet) {
+        checkHomeworldData(applicant)
+        .then(function() {
+            renderViewApplicant(applicant)
+        })
+        
+    }
+    else{
+        renderViewApplicant(applicant)
+    }
+}
+function checkImmigarationStatus(applicant) {
+    let isAccepted = state.acceptedApplicants.some(function(acceptedApplicant) {
+        return acceptedApplicant === applicant.name
+    })
+
+    let isRejected = state.rejectedApplicants.some(function(acceptedApplicant) {
+        return acceptedApplicant === applicant.name
+    })
+
+    if(isAccepted) {
+        return "isAccepted"
+    }
+    if(isRejected) {
+        return "isRejected"
+    }
+    else {
+        return null
+    }
+    // console.log("Accepted?:", isAccepted)
+    // console.log("Rejected?:", isRejected)
+
+    // if(isAccepted) {
+    //     renderAcceptedView()
+    // }
+    // if(isRejected) {
+    //     renderRejectedView()
+    // }
+    // else {
+    //     renderImmigrationForm()
+    // }
+    
+}
+
+
+
