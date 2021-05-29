@@ -68,9 +68,8 @@ function renderApplicants() {
         applicantEL.setAttribute("class", "applicant")
 
         let isApplicantAccepted = state.acceptedApplicants.some(function (acceptedApplicant) {
-            return acceptedApplicant === applicant.name
+            return acceptedApplicant.name === applicant.name
         })
-        console.log(isApplicantAccepted)
         if(isApplicantAccepted) {
             applicantEL.classList.add("accepted")
         }
@@ -260,32 +259,37 @@ function renderImmigrationForm(applicant) {
     acceptButtonEl.setAttribute("type", "submit")
     acceptButtonEl.innerText = "Accept"
 
-    // const rejectButtonEl = createEl("button")
-    // rejectButtonEl.setAttribute("class", "reject")
-    // rejectButtonEl.setAttribute("type", "button")
-    // rejectButtonEl.innerText = "Reject"
+    acceptButtonEl.addEventListener("click", function(event) {
+        event.preventDefault()
 
-    acceptButtonEl.addEventListener("click", accepted)
-    // TODO acceptButtonEl.addEventListener("submit", function(e) {
-    //     e.preventDefault()
+        accepted(applicant)
 
-    //     accepted()
+    })
 
-
-    // })
-
-    function accepted() {
+    function accepted(applicant) {
         infoSection.innerHTML = ""
-        // let newAcceptedApplicants = [...state.acceptedApplicants.push(applicant.name)]
 
-        //TODO
-        // let acceptedApplicant = {
-        //     name: applicant.name,
-        //     distination: destinationInputEl.value,
-        //     purposeOfTravel: purposeOfTravelSelectEl.value,
-        //     terroristActivity: terroristActivityFieldsetlEl.value
-        // }
-        setState({"acceptedApplicants": [...state.acceptedApplicants, applicant.name]})
+        console.log(applicant.name)
+
+
+        let terrorValue = ""
+        if(yesInputEl.checked) {
+            terrorValue = yesInputEl.value
+        }
+        if(noInputEl.checked) {
+            terrorValue = noInputEl.value
+        }
+
+        
+
+        let acceptedApplicant = {
+            name: applicant.name,
+            distination: destinationInputEl.value,
+            purposeOfTravel: purposeOfTravelSelectEl.value,
+            terroristActivity: terrorValue
+        }
+        
+        setState({"acceptedApplicants": [...state.acceptedApplicants, acceptedApplicant]})
         acceptButtonEl.setAttribute("disabled", "")
         acceptButtonEl.setAttribute("class", "accepted")
 
@@ -305,6 +309,7 @@ function renderImmigrationForm(applicant) {
         purposeOfTravelLabelEl,
         purposeOfTravelSelectEl,
         terroristActivityLabelEl,
+        terroristActivityFieldsetlEl,
         acceptButtonEl
         )
     actionSection.append(headingEL, subheadingEl, formEl)
@@ -329,11 +334,11 @@ function renderApplicantData(applicant) {
 }
 function checkImmigarationStatus(applicant) {
     let isAccepted = state.acceptedApplicants.some(function(acceptedApplicant) {
-        return acceptedApplicant === applicant.name
+        return acceptedApplicant.name === applicant.name
     })
 
     let isRejected = state.rejectedApplicants.some(function(acceptedApplicant) {
-        return acceptedApplicant === applicant.name
+        return acceptedApplicant.name === applicant.name
     })
 
     if(isAccepted) {
